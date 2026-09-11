@@ -92,7 +92,9 @@ Detected HUMAN (Let's announce)
 ```
 ### Project Demo
 # Video
-[Add your demo video link here]
+<video src="demo.mp4" controls width="640">
+  Demo
+</video>
 *Explain what the video demonstrates*
 
 # Additional Demos
