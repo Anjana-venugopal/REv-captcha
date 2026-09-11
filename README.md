@@ -41,10 +41,10 @@ For Software:
 cd path/to/rev-captcha
 
 # Run
-# Using Python 3
+Using Python 3
 python -m http.server 8000
 
-# Using Node.js (npx)
+Using Node.js (npx)
 npx serve .
 
 ### Project Documentation
