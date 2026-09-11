@@ -55,7 +55,7 @@ For Software:
 This is How REv-captcha appears to you...
 
 <img width="459" height="603" src="Working of REv-capture.png" />
-It works with special image recongisation ( It works only for AI).
+It works with special image recognition ( It works only for AI).
 
 <img width="459" height="603" src="Detected Human (without alert).png" />
 Detected HUMAN ( Without announcing AI Force)
@@ -102,7 +102,7 @@ Detected HUMAN (Let's announce)
 https://github.com/user-attachments/assets/6bdadd27-dc69-4b86-ad70-e58a97220220
 
 
-*Explain what the video demonstrates*
+In the demo video it shows how REv-capture works with Human interactions, It is basically designed for AI recognition, it detected human visual selection, cursor movement, which calculated human moves whereas AI can recognise within 100ms.
 
 
 
