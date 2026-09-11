@@ -46,7 +46,7 @@ For Software:
 For Software:
 
 # Screenshots (Add at least 3)
-![Screenshot1](Add screenshot 1 here with proper name)
+<img width="459" height="603" src="First-view of REv-capture.png" />
 *Add caption explaining what this shows*
 
 ![Screenshot2](Add screenshot 2 here with proper name)
