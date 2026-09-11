@@ -47,37 +47,49 @@ For Software:
 
 # Screenshots (Add at least 3)
 <img width="459" height="603" src="First-view of REv-capture.png" />
-*Add caption explaining what this shows*
+This is How REv-captcha appears to you...
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
+<img width="459" height="603" src="Working of REv-capture.png" />
+It works with special image recongisation ( It works only for AI).
 
-![Screenshot3](Add screenshot 3 here with proper name)
-*Add caption explaining what this shows*
+<img width="459" height="603" src="Detected Human (without alert).png" />
+Detected HUMAN ( Without announcing AI Force)
+
+<img width="459" height="603" src="Detected Human Alert.png" />
+Detected HUMAN (Let's announce)
 
 # Diagrams
-![Workflow](Add your workflow/architecture diagram here)
-*Add caption explaining your workflow*
+```
+  +-------------------------------------------------------------+
+  |                     USER INTERACTION                        |
+  |             (Mouse Telemetry & Hover Jitter)                |
+  +------------------------------+------------------------------+
+                                 |
+                                 v
+  +-------------------------------------------------------------+
+  |                   CANVAS ENGINE (Client)                    |
+  |        - Renders Steganographic Matrix                      |
+  |        - Hidden target keys: RGB(0, 255, 102)             |
+  +------------------------------+------------------------------+
+                                 |
+                        [ Analyze Parity ]
+                                 |
+                +----------------+----------------+
+                |                                 |
+                v                                 v
+     [ BOT MATCH (Instant) ]            [ HUMAN DETECTED (Fail/Jitter) ]
+                |                                 |
+                v                                 v
+    +-----------------------+         +-----------------------+
+    | SUCCESS HUD           |         | ALERT RESPONSE HUD    |
+    | - Centered Green Tick |         | - Centered Red Cross  |
+    | - 0.0% Human Score    |         | - Blinking Red Banner |
+    +-----------------------+         | - Speech Synthesis:   |
+                                      |   "Meatbag detected"  |
+                                      |   (10x Rapid Loop)    |
+                                      +-----------------------+
 
-For Hardware:
-
-# Schematic & Circuit
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
-
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
-
-# Build Photos
-![Components](Add photo of your components here)
-*List out all components shown*
-
-![Build](Add photos of build process here)
-*Explain the build steps*
-
-![Final](Add photo of final product here)
-*Explain the final build*
-
+```
 ### Project Demo
 # Video
 [Add your demo video link here]
