@@ -1,0 +1,585 @@
+:root {
+            --recaptcha-blue: #1a73e8;
+            --recaptcha-hover-blue: #1557b0;
+            --bg-color: #0e1117;
+            --terminal-green: #00ff66;
+            --terminal-red: #ff3344;
+            --terminal-yellow: #ffbe3b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(rgba(0, 255, 102, 0.08) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(14, 17, 23, 0.8), rgba(14, 17, 23, 0.95));
+            background-size: 24px 24px, 100% 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #c9d1d9;
+        }
+
+        .header-title {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+            color: #f0f6fc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header-title p {
+            font-size: 13px;
+            color: #8b949e;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .captcha-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .recaptcha-card {
+            width: 310px;
+            height: 78px;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px 0 14px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .recaptcha-card:hover {
+            border-color: #58a6ff;
+            box-shadow: 0 0 12px rgba(26, 115, 232, 0.25);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #484f58;
+            border-radius: 3px;
+            background-color: #0d1117;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .checkbox:hover {
+            border-color: #8b949e;
+        }
+
+        .checkbox.checked::after {
+            content: '';
+            width: 6px;
+            height: 12px;
+            border: solid var(--terminal-green);
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+            margin-bottom: 2px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--recaptcha-blue);
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .label-text {
+            font-size: 14px;
+            color: #e6edf3;
+            font-weight: 500;
+        }
+
+        .brand-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-logo svg {
+            width: 30px;
+            height: 30px;
+            fill: var(--recaptcha-blue);
+        }
+
+        .brand-title {
+            font-size: 10px;
+            color: #8b949e;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .brand-links {
+            font-size: 8px;
+            color: #484f58;
+            display: flex;
+            gap: 4px;
+            margin-top: 2px;
+        }
+
+        /* AI Challenge Pop-up Modal */
+        .challenge-modal {
+            position: absolute;
+            top: -125px;
+            left: 330px;
+            width: 360px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            padding: 8px;
+            display: none;
+            z-index: 100;
+            border-radius: 6px;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .challenge-modal::before {
+            content: '';
+            position: absolute;
+            top: 150px;
+            left: -11px;
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 11px solid #30363d;
+        }
+
+        .modal-header {
+            background-color: #1f242d;
+            border: 1px solid #30363d;
+            color: #fff;
+            padding: 14px;
+            margin: -8px -8px 8px -8px;
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timer-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            width: 100%;
+            background: var(--terminal-green);
+            transition: width 0.1s linear, background-color 0.3s ease;
+        }
+
+        .modal-header h3 {
+            font-size: 12px;
+            font-weight: 400;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-header strong {
+            font-size: 16px;
+            font-weight: 700;
+            display: block;
+            margin-top: 4px;
+            color: var(--terminal-green);
+            font-family: 'Fira Code', monospace;
+        }
+
+        .modal-header p {
+            font-size: 11px;
+            margin-top: 6px;
+            color: #c9d1d9;
+        }
+
+        .timer-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--terminal-green);
+            background: #0d1117;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid #30363d;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+            background-color: #0d1117;
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px solid #21262d;
+            position: relative;
+        }
+
+        .grid-tile {
+            width: 108px;
+            height: 108px;
+            background-color: #000;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #21262d;
+            border-radius: 3px;
+            transition: border-color 0.15s ease, transform 0.1s ease;
+        }
+
+        .grid-tile:active {
+            transform: scale(0.96);
+        }
+
+        .grid-tile canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            image-rendering: pixelated;
+        }
+
+        .grid-tile.selected {
+            border-color: var(--terminal-green);
+        }
+
+        .grid-tile.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 20px;
+            height: 20px;
+            background: var(--terminal-green);
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 5;
+        }
+
+        /* Laser Scanner Beam Overlay */
+        .scan-line {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(0, 255, 102, 0.8);
+            box-shadow: 0 0 8px #00ff66;
+            animation: scan 2s linear infinite;
+            pointer-events: none;
+            display: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 8px;
+            border-top: 1px solid #21262d;
+        }
+
+        .footer-icons {
+            display: flex;
+            gap: 12px;
+            color: #8b949e;
+        }
+
+        .footer-icons svg {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            fill: #8b949e;
+            transition: fill 0.2s;
+        }
+
+        .footer-icons svg:hover {
+            fill: #f0f6fc;
+        }
+
+        .verify-button {
+            background-color: var(--recaptcha-blue);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 3px;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .verify-button:hover {
+            background-color: var(--recaptcha-hover-blue);
+        }
+
+        .hud-panel {
+            margin-top: 25px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 14px;
+            width: 310px;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: #8b949e;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+
+        .hud-header {
+            font-weight: bold;
+            color: #f0f6fc;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #21262d;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .hud-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .hud-value {
+            font-weight: 600;
+            color: #f0f6fc;
+        }
+
+        /* Terminal Overlay */
+        .status-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(10, 12, 16, 0.94);
+            backdrop-filter: blur(10px);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .terminal-box {
+            width: 100%;
+            max-width: 580px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .terminal-header {
+            background: #161b22;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ff5f56; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #27c93f; }
+
+        .terminal-body {
+            padding: 22px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .status-overlay.fail .terminal-body { color: var(--terminal-red); }
+        .status-overlay.pass .terminal-body { color: var(--terminal-green); }
+
+        .metrics-list {
+            background: #010409;
+            border: 1px solid #21262d;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 14px 0;
+            color: #c9d1d9;
+            font-size: 12px;
+        }
+
+        .restart-btn {
+            background: #238636;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Fira Code', monospace;
+            font-weight: 600;
+            font-size: 13px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .restart-btn:hover { background: #2ea043; }
+
+        @media (max-width: 720px) {
+            .challenge-modal {
+                left: 50%;
+                transform: translateX(-50%);
+                top: 90px;
+                width: 320px;
+            }
+            .grid-tile { width: 94px; height: 94px; }
+            .challenge-modal::before { display: none; }
+        }
+
+/* Familiar light CAPTCHA presentation — verification behavior remains unchanged. */
+:root {
+    --recaptcha-blue: #1a73e8;
+    --recaptcha-hover-blue: #1769d1;
+    --bg-color: #f7f7f7;
+    --terminal-green: #1a73e8;
+    --terminal-red: #d93025;
+    --terminal-yellow: #f9ab00;
+}
+
+body {
+    background: #f7f7f7;
+    color: #202124;
+}
+
+.header-title h1 { color: #202124; }
+.header-title p { color: #5f6368; font-family: 'Roboto', sans-serif; }
+
+.recaptcha-card {
+    width: 304px;
+    height: 78px;
+    background: #fafafa;
+    border-color: #d5d5d5;
+    border-radius: 2px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .16);
+    padding: 0 12px;
+}
+
+.recaptcha-card:hover {
+    border-color: #c6c6c6;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, .22);
+}
+
+.checkbox-container { gap: 12px; }
+.checkbox {
+    width: 28px;
+    height: 28px;
+    border: 2px solid #555;
+    border-radius: 2px;
+    background: #fff;
+}
+.checkbox:hover { border-color: #1a73e8; }
+.checkbox.checked { background: #1a73e8; border-color: #1a73e8; }
+.checkbox.checked::after {
+    width: 7px;
+    height: 13px;
+    border-color: #fff;
+    border-width: 0 3px 3px 0;
+}
+.spinner { width: 28px; height: 28px; border-width: 3px; }
+.label-text { color: #333; font-size: 14px; font-weight: 400; }
+.brand-logo svg { width: 32px; height: 32px; fill: #4285f4; }
+.brand-title { color: #555; font-weight: 400; font-size: 10px; }
+.brand-links { color: #777; font-size: 8px; }
+
+.challenge-modal {
+    background: #fff;
+    border-color: #d5d5d5;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, .25);
+    border-radius: 2px;
+}
+.challenge-modal::before { border-right-color: #d5d5d5; }
+.modal-header { background: #1a73e8; border: 0; border-radius: 0; }
+.modal-header h3, .modal-header p { color: #fff; }
+.modal-header strong { color: #fff; font-family: 'Roboto', sans-serif; }
+.timer-badge { color: #1a73e8; background: #fff; border: 0; }
+.timer-progress-bar { background: #fff; }
+.grid-container { background: #fff; border-color: #e0e0e0; }
+.grid-tile { border-color: #fff; border-radius: 0; }
+.grid-tile.selected { border-color: #1a73e8; }
+.grid-tile.selected::before { background: #1a73e8; color: #fff; border-radius: 0; }
+.scan-line { background: rgba(26, 115, 232, .85); box-shadow: 0 0 8px #1a73e8; }
+.modal-footer { border-top-color: #e0e0e0; }
+.footer-icons { color: #777; }
+.footer-icons svg { fill: #777; }
+.footer-icons svg:hover { fill: #1a73e8; }
+.verify-button { background: #1a73e8; border-radius: 2px; font-family: 'Roboto', sans-serif; }
+
+.hud-panel {
+    background: #fff;
+    border-color: #dadce0;
+    color: #5f6368;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .12);
+}
+.hud-header, .hud-value { color: #202124; }
+.hud-header { border-bottom-color: #e8eaed; }
+
+.status-overlay { background: rgba(255, 255, 255, .92); color: #202124; }
+.terminal-box { background: #fff; border-color: #dadce0; box-shadow: 0 3px 14px rgba(0, 0, 0, .2); }
+.terminal-header { background: #f8f9fa; border-bottom-color: #dadce0; }
+.metrics-list { background: #f8f9fa; border-color: #dadce0; color: #3c4043; }
+.restart-btn { background: #1a73e8; border-radius: 2px; }
+.restart-btn:hover { background: #1769d1; }
