@@ -2,39 +2,37 @@
 
 
 
-# [Project Name] 🎯
+# REv-captcha 🎯
 
 
 ## Basic Details
-### Team Name: [Name]
+### Team Name: 911
 
 
 ### Team Members
-- Team Lead: [Name] - [College]
-- Member 2: [Name] - [College]
-- Member 3: [Name] - [College]
+- Team Lead: ANUJ DAS - College of Engineering,Attingal
+- Member 2: ANJANA V NAIR - College of Engineering,Attingal
+
 
 ### Project Description
-[2-3 lines about what your project does]
+A security gatekeeping system designed for a high-security server that explicitly blocks human users and allows entry only to legitimate AI agents and scripts.
+basically it's a "Reverse Captcha" where instead of bots, humans are detected.
 
 ### The Problem (that doesn't exist)
-[What ridiculous problem are you solving?]
+We are doing a useless project (which might get used in future).It's just a random thought- why don't we created something really opposite.
 
 ### The Solution (that nobody asked for)
-[How are you solving it? Keep it fun!]
+Robots are going to struggle due to human interventions in their websites in future.
+Therefore, "the good samaritan" like us have came up with a solution ,  REv-captcha  : The one and only bot verification system where humans are strictly 'prohibitted'
 
 ## Technical Details
 ### Technologies/Components Used
 For Software:
-- [Languages used]
-- [Frameworks used]
-- [Libraries used]
-- [Tools used]
-
-For Hardware:
-- [List main components]
-- [List specifications]
-- [List tools required]
+- HTML
+- CSS
+- JAVASCRIPT
+- VS Code
+- Gemini
 
 ### Implementation
 For Software:
