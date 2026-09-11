@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>reBOTcha - Bot Verification System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- ==================================================================== -->
+    <!-- APP.CSS (Extract this content into app.css if using separate files)  -->
+    <!-- ==================================================================== -->
+    <style id="app-css">
+        :root {
+            --recaptcha-blue: #1a73e8;
+            --recaptcha-hover-blue: #1557b0;
+            --card-bg: #f9f9f9;
+            --card-border: #d3d3d3;
+            --text-main: #222222;
+            --text-sub: #555555;
+            --terminal-red: #d93025;
+            --terminal-green: #1e8e3e;
+            --terminal-yellow: #f9ab00;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', Arial, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            background-image: 
+                radial-gradient(rgba(26, 115, 232, 0.08) 1px, transparent 1px),
+                linear-gradient(to bottom, #eef2f6, #e4e8ed);
+            background-size: 24px 24px, 100% 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-main);
+        }
+
+        .header-title {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .header-title h1 {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin-bottom: 6px;
+            color: #1a202c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header-title p {
+            font-size: 13px;
+            color: #5f6368;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .captcha-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Replica of Google reCAPTCHA v2 Light Card */
+        .recaptcha-card {
+            width: 304px;
+            height: 78px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 3px;
+            box-shadow: 0 0 4px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px 0 12px;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .recaptcha-card:hover {
+            box-shadow: 0 1px 6px rgba(0,0,0,0.14);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #c1c1c1;
+            border-radius: 2px;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.15s ease;
+            position: relative;
+        }
+
+        .checkbox:hover {
+            border-color: #b2b2b2;
+        }
+
+        .checkbox.checked::after {
+            content: '';
+            width: 6px;
+            height: 12px;
+            border: solid var(--terminal-green);
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+            margin-bottom: 2px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--recaptcha-blue);
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .label-text {
+            font-size: 14px;
+            color: #222222;
+            font-weight: 400;
+        }
+
+        .brand-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-logo svg {
+            width: 32px;
+            height: 32px;
+            fill: var(--recaptcha-blue);
+        }
+
+        .brand-title {
+            font-size: 10px;
+            color: #555555;
+            font-weight: 500;
+            margin-top: 1px;
+        }
+
+        .brand-links {
+            font-size: 8px;
+            color: #858585;
+            display: flex;
+            gap: 3px;
+            margin-top: 1px;
+        }
+
+        /* Official reCAPTCHA Challenge Pop-up Container */
+        .challenge-modal {
+            position: absolute;
+            top: -125px;
+            left: 316px;
+            width: 310px;
+            background: #ffffff;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            padding: 7px;
+            display: none;
+            z-index: 100;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .challenge-modal::before {
+            content: '';
+            position: absolute;
+            top: 150px;
+            left: -11px;
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 11px solid #ccc;
+        }
+
+        .challenge-modal::after {
+            content: '';
+            position: absolute;
+            top: 151px;
+            left: -10px;
+            width: 0;
+            height: 0;
+            border-top: 9px solid transparent;
+            border-bottom: 9px solid transparent;
+            border-right: 10px solid #1a73e8;
+        }
+
+        .modal-header {
+            background-color: var(--recaptcha-blue);
+            color: #ffffff;
+            padding: 14px;
+            margin: -7px -7px 7px -7px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timer-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            width: 100%;
+            background: #00ff66;
+            transition: width 0.1s linear, background-color 0.3s ease;
+        }
+
+        .modal-header h3 {
+            font-size: 12px;
+            font-weight: 400;
+            color: #e8f0fe;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .modal-header strong {
+            font-size: 16px;
+            font-weight: 700;
+            display: block;
+            margin-top: 4px;
+            color: #ffffff;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .modal-header p {
+            font-size: 11px;
+            margin-top: 4px;
+            color: #e8f0fe;
+        }
+
+        .timer-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 2px 7px;
+            border-radius: 3px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-bottom: 6px;
+            background-color: #f1f3f4;
+            padding: 2px;
+            position: relative;
+        }
+
+        .grid-tile {
+            width: 94px;
+            height: 94px;
+            background-color: #000000;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: transform 0.1s ease;
+        }
+
+        .grid-tile:active {
+            transform: scale(0.96);
+        }
+
+        .grid-tile canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            image-rendering: pixelated;
+        }
+
+        .grid-tile.selected {
+            border: 3px solid var(--recaptcha-blue);
+        }
+
+        .grid-tile.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            background: var(--recaptcha-blue);
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 5;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(26, 115, 232, 0.8);
+            box-shadow: 0 0 8px #1a73e8;
+            animation: scan 2s linear infinite;
+            pointer-events: none;
+            display: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 6px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer-icons {
+            display: flex;
+            gap: 12px;
+            color: #70757a;
+        }
+
+        .footer-icons svg {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            fill: #70757a;
+            transition: fill 0.2s;
+        }
+
+        .footer-icons svg:hover {
+            fill: #202124;
+        }
+
+        .verify-button {
+            background-color: var(--recaptcha-blue);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 2px;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .verify-button:hover {
+            background-color: var(--recaptcha-hover-blue);
+        }
+
+        /* Clean Biometric HUD Panel */
+        .hud-panel {
+            margin-top: 24px;
+            background: #ffffff;
+            border: 1px solid var(--card-border);
+            border-radius: 4px;
+            padding: 14px 16px;
+            width: 304px;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: #5f6368;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .hud-header {
+            font-weight: bold;
+            color: #202124;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e8eaed;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .hud-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .hud-value {
+            font-weight: 600;
+            color: #202124;
+        }
+
+        /* reCAPTCHA Authentic Result & Error States */
+        .recaptcha-error-msg {
+            display: none;
+            color: #c5221f;
+            font-size: 12px;
+            margin-top: 8px;
+            font-weight: 500;
+            text-align: left;
+            width: 304px;
+            padding: 8px 10px;
+            background: #fce8e6;
+            border: 1px solid #fad2cf;
+            border-radius: 3px;
+            animation: fadeIn 0.2s ease-out;
+            line-height: 1.4;
+        }
+
+        .modal-error-banner {
+            display: none;
+            background-color: #fce8e6;
+            color: #c5221f;
+            font-size: 11px;
+            padding: 6px 10px;
+            margin: -7px -7px 7px -7px;
+            border-bottom: 1px solid #fad2cf;
+            font-weight: 500;
+        }
+
+        .checkbox.error {
+            border-color: #d93025;
+            background-color: #fce8e6;
+            box-shadow: 0 0 0 2px rgba(217, 48, 37, 0.15);
+            transition: all 0.2s ease;
+        }
+
+        .checkbox.error::after {
+            content: '✕';
+            color: #d93025;
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+        }
+
+        .recaptcha-success-msg {
+            display: none;
+            color: #0d652d;
+            font-size: 12px;
+            margin-top: 8px;
+            font-weight: 500;
+            text-align: left;
+            width: 304px;
+            padding: 10px 12px;
+            background: #e6f4ea;
+            border: 1px solid #ceead6;
+            border-radius: 3px;
+            animation: fadeIn 0.2s ease-out;
+            line-height: 1.4;
+        }
+
+        .result-actions {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #1a73e8, #1557b0);
+            color: #ffffff;
+            border: none;
+            padding: 7px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(26, 115, 232, 0.25);
+            transition: all 0.2s ease;
+            font-family: 'Roboto', sans-serif;
+            letter-spacing: 0.3px;
+        }
+
+        .restart-btn:hover {
+            background: linear-gradient(135deg, #1557b0, #0d47a1);
+            box-shadow: 0 3px 6px rgba(26, 115, 232, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .restart-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(26, 115, 232, 0.2);
+        }
+
+        .restart-btn svg {
+            width: 13px;
+            height: 13px;
+            fill: #ffffff;
+            transition: transform 0.3s ease;
+        }
+
+        .restart-btn:hover svg {
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 720px) {
+            .challenge-modal {
+                left: 50%;
+                transform: translateX(-50%);
+                top: 90px;
+                width: 310px;
+            }
+            .challenge-modal::before, .challenge-modal::after { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-title">
+        <h1>
+            <svg width="34" height="34" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4" y="8" width="24" height="18" rx="6" fill="url(#botGrad)" stroke="#1a73e8" stroke-width="2"/>
+                <path d="M16 2V8M10 4L12 8M22 4L20 8" stroke="#1a73e8" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="16" cy="2" r="1.5" fill="#1a73e8"/>
+                <rect x="1" y="13" width="3" height="8" rx="1.5" fill="#1a73e8"/>
+                <rect x="28" y="13" width="3" height="8" rx="1.5" fill="#1a73e8"/>
+                <rect x="8" y="13" width="16" height="6" rx="3" fill="#1a202c"/>
+                <circle cx="12" cy="16" r="1.8" fill="#00ff66"/>
+                <circle cx="20" cy="16" r="1.8" fill="#00ff66"/>
+                <path d="M12 22H20M14 24H18" stroke="#1a73e8" stroke-width="1.5" stroke-linecap="round"/>
+                <defs>
+                    <linearGradient id="botGrad" x1="4" y1="8" x2="28" y2="26" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#1a73e8" stop-opacity="0.15"/>
+                        <stop offset="1" stop-color="#1a73e8" stop-opacity="0.03"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            REv_captcha Gateway
+        </h1>
+        <p>Bot Verification System • Humans Strictly Prohibited</p>
+    </div>
+
+    <div class="captcha-wrapper">
+        <!-- Google reCAPTCHA v2 Authentic Human Style Box -->
+        <div class="recaptcha-card">
+            <div class="checkbox-container" id="captchaBox" onclick="startVerification()">
+                <div class="checkbox" id="captchaCheckbox"></div>
+                <div class="spinner" id="captchaSpinner"></div>
+                <span class="label-text">I am a robot</span>
+            </div>
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/>
+                    <path d="M12 6a6 6 0 0 0-6 6h2a4 4 0 0 1 4-4V6z"/>
+                </svg>
+                <span class="brand-title">REv_captcha</span>
+                <div class="brand-links">
+                    <span>Privacy</span> • <span>Terms</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pop-Up AI Steganography Image Challenge Modal -->
+        <div class="challenge-modal" id="challengeModal">
+            <div class="modal-header">
+                <div class="timer-badge" id="timerDisplay">10.0s</div>
+                <h3>Select all images containing</h3>
+                <strong>CRC-32 STEGANOGRAPHY NOISE</strong>
+                <p>Parse high-frequency noise canvas buffers within 10.0s.</p>
+                <div class="timer-progress-bar" id="timerBar"></div>
+            </div>
+
+            <div class="modal-error-banner" id="modalErrorBanner"></div>
+
+            <div class="grid-container" id="gridContainer">
+                <div class="scan-line" id="scanLine"></div>
+                <div class="grid-tile" data-index="0" onclick="toggleTile(this)"><canvas id="c0"></canvas></div>
+                <div class="grid-tile" data-index="1" onclick="toggleTile(this)"><canvas id="c1"></canvas></div>
+                <div class="grid-tile" data-index="2" onclick="toggleTile(this)"><canvas id="c2"></canvas></div>
+                <div class="grid-tile" data-index="3" onclick="toggleTile(this)"><canvas id="c3"></canvas></div>
+                <div class="grid-tile" data-index="4" onclick="toggleTile(this)"><canvas id="c4"></canvas></div>
+                <div class="grid-tile" data-index="5" onclick="toggleTile(this)"><canvas id="c5"></canvas></div>
+                <div class="grid-tile" data-index="6" onclick="toggleTile(this)"><canvas id="c6"></canvas></div>
+                <div class="grid-tile" data-index="7" onclick="toggleTile(this)"><canvas id="c7"></canvas></div>
+                <div class="grid-tile" data-index="8" onclick="toggleTile(this)"><canvas id="c8"></canvas></div>
+            </div>
+
+            <div class="modal-footer">
+                <div class="footer-icons">
+                    <svg viewBox="0 0 24 24" onclick="regenerateCanvases()" title="Reload new image challenge" style="cursor:pointer;"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                    <svg viewBox="0 0 24 24" onclick="playBotAudio()" title="Audio challenge for bots" style="cursor:pointer;"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                </div>
+                <button class="verify-button" onclick="verifySelection()">VERIFY</button>
+            </div>
+        </div>
+
+        <!-- Authentic reCAPTCHA Style Error Message Banner -->
+        <div class="recaptcha-error-msg" id="recaptchaErrorMsg"></div>
+    </div>
+
+    <!-- Biometric Monitor HUD Panel -->
+    <div class="hud-panel">
+        <div class="hud-header">
+            <span>BIOMETRIC MONITOR</span>
+            <span style="color:var(--terminal-green)">ACTIVE</span>
+        </div>
+        <div class="hud-row">
+            <span>TRAJECTORY CURVE:</span>
+            <span class="hud-value" id="hudCurve">LINEAR</span>
+        </div>
+        <div class="hud-row">
+            <span>JERK / TREMOR INDEX:</span>
+            <span class="hud-value" id="hudTremor">0.00</span>
+        </div>
+        <div class="hud-row">
+            <span>HOVER HESITATION:</span>
+            <span class="hud-value" id="hudHover">0ms</span>
+        </div>
+        <div class="hud-row">
+            <span>TIME REMAINING:</span>
+            <span class="hud-value" id="hudTimer" style="color:var(--terminal-green)">10.00s</span>
+        </div>
+        <div class="hud-row">
+            <span>HUMAN LIKELIHOOD:</span>
+            <span class="hud-value" id="hudProb" style="color:var(--terminal-green)">0.0%</span>
+        </div>
+    </div>
+
+    <!-- ==================================================================== -->
+    <!-- SCRIPT.JS (Extract this content into script.js if using separate files)-->
+    <!-- ==================================================================== -->
+    <script id="script-js">
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playBeep(freq = 440, type = 'sine', duration = 0.08) {
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        // --- TELEMETRY ENGINE ---
+        let mousePositions = [];
+        let tileHoverTimes = {};
+        let currentHoverTile = null;
+        let hoverStartTime = 0;
+        let humanScore = 0;
+        let totalAngleVariance = 0;
+        let microJerkCount = 0;
+
+        // 10-Second Countdown Timer Variables
+        const TIMEOUT_LIMIT = 10.0;
+        let timeRemaining = TIMEOUT_LIMIT;
+        let timerInterval = null;
+        let globalStartTime = 0;
+        let verificationStarted = false;
+
+        document.addEventListener('mousemove', (e) => {
+            const now = Date.now();
+            mousePositions.push({ x: e.clientX, y: e.clientY, time: now });
+            if (mousePositions.length > 30) mousePositions.shift();
+
+            analyzeTrajectory();
+        });
+
+        function analyzeTrajectory() {
+            if (mousePositions.length < 5) return;
+
+            let angleChange = 0;
+            let jerkSum = 0;
+
+            for (let i = 2; i < mousePositions.length; i++) {
+                let p1 = mousePositions[i-2];
+                let p2 = mousePositions[i-1];
+                let p3 = mousePositions[i];
+
+                let a1 = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+                let a2 = Math.atan2(p3.y - p2.y, p3.x - p2.x);
+                let diff = Math.abs(a2 - a1);
+                angleChange += diff;
+
+                let dt = (p3.time - p1.time) || 1;
+                let dist = Math.hypot(p3.x - p1.x, p3.y - p1.y);
+                let speed = dist / dt;
+                if (speed > 0.05 && diff > 0.4) {
+                    jerkSum += diff;
+                }
+            }
+
+            totalAngleVariance = angleChange;
+            if (jerkSum > 1.2) microJerkCount++;
+
+            if (angleChange > 1.2) {
+                humanScore = Math.min(100, humanScore + 1.5);
+                document.getElementById('hudCurve').innerText = 'BIOLOGICAL CURVE';
+                document.getElementById('hudCurve').style.color = '#d93025';
+            } else {
+                document.getElementById('hudCurve').innerText = 'DIRECT VECTOR';
+                document.getElementById('hudCurve').style.color = '#1e8e3e';
+            }
+
+            document.getElementById('hudTremor').innerText = (jerkSum).toFixed(2);
+            document.getElementById('hudProb').innerText = humanScore.toFixed(1) + '%';
+            if (humanScore > 40) {
+                document.getElementById('hudProb').style.color = '#d93025';
+            }
+        }
+
+        function startGlobalTimer() {
+            if (timerInterval) return;
+            globalStartTime = Date.now();
+            
+            timerInterval = setInterval(() => {
+                const elapsed = (Date.now() - globalStartTime) / 1000;
+                timeRemaining = Math.max(0, TIMEOUT_LIMIT - elapsed);
+
+                const displayStr = timeRemaining.toFixed(1) + 's';
+                document.getElementById('hudTimer').innerText = timeRemaining.toFixed(2) + 's';
+                document.getElementById('timerDisplay').innerText = displayStr;
+
+                const percent = (timeRemaining / TIMEOUT_LIMIT) * 100;
+                const timerBar = document.getElementById('timerBar');
+                if (timerBar) {
+                    timerBar.style.width = percent + '%';
+                    if (percent < 30) timerBar.style.backgroundColor = '#d93025';
+                    else if (percent < 60) timerBar.style.backgroundColor = '#f9ab00';
+                }
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    denyAccess("10-SECOND TIMEOUT EXCEEDED", "Human reaction latency detected. Automated agents process security challenges in < 100 milliseconds.");
+                }
+            }, 50);
+        }
+
+        let tileParityMap = [];
+        let targetBotTileCount = 3;
+
+        function generateNoiseCanvases() {
+            tileParityMap = [];
+            // Unselect all tiles on reload
+            document.querySelectorAll('.grid-tile').forEach(tile => tile.classList.remove('selected'));
+
+            // Pick 3 random distinct tile indices out of 9 for valid AI steganography
+            const indices = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+            for (let i = indices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [indices[i], indices[j]] = [indices[j], indices[i]];
+            }
+            
+            const validIndices = new Set(indices.slice(0, 3));
+            targetBotTileCount = validIndices.size;
+
+            // Vary noise generation algorithm on each reload
+            const noiseType = Math.floor(Math.random() * 3);
+
+            for (let i = 0; i < 9; i++) {
+                const canvas = document.getElementById(`c${i}`);
+                if (!canvas) continue;
+                canvas.width = 64;
+                canvas.height = 64;
+                const ctx = canvas.getContext('2d');
+                const imgData = ctx.createImageData(64, 64);
+
+                const isValidBotTile = validIndices.has(i);
+                tileParityMap[i] = isValidBotTile;
+
+                for (let p = 0; p < imgData.data.length; p += 4) {
+                    let noise;
+                    if (noiseType === 0) {
+                        noise = Math.floor(Math.random() * 255);
+                    } else if (noiseType === 1) {
+                        noise = (p % 128 < 64) ? Math.floor(Math.random() * 180) : Math.floor(Math.random() * 255);
+                    } else {
+                        noise = Math.floor((Math.sin(p) + 1) * 127.5);
+                    }
+
+                    imgData.data[p] = noise;       
+                    imgData.data[p+1] = noise;     
+                    imgData.data[p+2] = noise;     
+                    imgData.data[p+3] = 255;       
+                }
+
+                if (isValidBotTile) {
+                    // Inject Steganographic RGB Marker into pixel buffer
+                    imgData.data[0] = 0;   
+                    imgData.data[1] = 255; 
+                    imgData.data[2] = 102; 
+                }
+
+                ctx.putImageData(imgData, 0, 0);
+
+                ctx.strokeStyle = isValidBotTile ? 'rgba(0, 255, 102, 0.15)' : 'rgba(255, 255, 255, 0.05)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                for(let x=0; x<64; x+=8) { ctx.moveTo(x, 0); ctx.lineTo(x, 64); }
+                ctx.stroke();
+            }
+        }
+
+        function startVerification() {
+            if (verificationStarted) return;
+            verificationStarted = true;
+
+            playBeep(600, 'sine', 0.08);
+            startGlobalTimer();
+
+            const checkbox = document.getElementById('captchaCheckbox');
+            const spinner = document.getElementById('captchaSpinner');
+
+            checkbox.style.display = 'none';
+            spinner.style.display = 'block';
+
+            setTimeout(() => {
+                spinner.style.display = 'none';
+                checkbox.style.display = 'block';
+
+                const triggerTime = (Date.now() - globalStartTime);
+
+                if (triggerTime > 120 || humanScore > 15 || microJerkCount > 2) {
+                    playBeep(300, 'square', 0.12);
+                    generateNoiseCanvases();
+                    document.getElementById('challengeModal').style.display = 'block';
+                    document.getElementById('scanLine').style.display = 'block';
+                    setupTileHoverTracking();
+                } else {
+                    grantAccess("INSTANT SCRIPT EXECUTION DETECTED. ZERO BIOMETRIC DYNAMICS.");
+                }
+            }, 400);
+        }
+
+        function setupTileHoverTracking() {
+            document.querySelectorAll('.grid-tile').forEach(tile => {
+                tile.addEventListener('mouseenter', () => {
+                    currentHoverTile = tile.getAttribute('data-index');
+                    hoverStartTime = Date.now();
+                });
+                tile.addEventListener('mouseleave', () => {
+                    if (currentHoverTile !== null && hoverStartTime > 0) {
+                        const hoverDuration = Date.now() - hoverStartTime;
+                        tileHoverTimes[currentHoverTile] = (tileHoverTimes[currentHoverTile] || 0) + hoverDuration;
+                        document.getElementById('hudHover').innerText = hoverDuration + 'ms';
+                        
+                        if (hoverDuration > 150) {
+                            humanScore = Math.min(100, humanScore + 8);
+                        }
+                    }
+                    currentHoverTile = null;
+                });
+            });
+        }
+
+        function toggleTile(element) {
+            playBeep(800, 'sine', 0.04);
+            element.classList.toggle('selected');
+        }
+
+        function verifySelection() {
+            clearInterval(timerInterval);
+            const selectedTiles = document.querySelectorAll('.grid-tile.selected');
+            const totalElapsed = ((Date.now() - globalStartTime) / 1000).toFixed(2);
+
+            let selectedIndices = [];
+            let correctCount = 0;
+            let wrongCount = 0;
+
+            selectedTiles.forEach(tile => {
+                let idx = parseInt(tile.getAttribute('data-index'));
+                selectedIndices.push(idx);
+                if (tileParityMap[idx]) {
+                    correctCount++;
+                } else {
+                    wrongCount++;
+                }
+            });
+
+            if (totalElapsed >= TIMEOUT_LIMIT) {
+                denyAccess("Timeout Exceeded", `Processing time: ${totalElapsed}s. Human reaction latency detected.`);
+            } else if (wrongCount > 0 || correctCount !== targetBotTileCount) {
+                denyAccess("Optical Parity Failure", `Incorrect noise buffers selected (${correctCount}/${targetBotTileCount} valid). Human visual guessing detected.`);
+            } else if (humanScore > 35) {
+                denyAccess("Biometric Trap Triggered", `Biological probability too high (${humanScore.toFixed(1)}%). Curved mouse trajectory and hand tremor noise detected.`);
+            } else {
+                grantAccess(`Steganographic pixel buffers correctly parsed in ${totalElapsed}s with 0.0% biological probability.`);
+            }
+        }
+
+        function denyAccess(reason, details) {
+            playBeep(150, 'sawtooth', 0.35);
+
+            // Hide challenge popup modal
+            document.getElementById('challengeModal').style.display = 'none';
+
+            // Mark checkbox as error
+            const checkbox = document.getElementById('captchaCheckbox');
+            if (checkbox) {
+                checkbox.className = 'checkbox error';
+            }
+
+            // Display standard reCAPTCHA error banner below card with styled restart button
+            const errorMsg = document.getElementById('recaptchaErrorMsg');
+            if (errorMsg) {
+                errorMsg.className = 'recaptcha-error-msg';
+                errorMsg.innerHTML = `
+                    <div><strong>❌ Verification failed.</strong><br>${reason}: ${details}</div>
+                    <div class="result-actions">
+                        <button class="restart-btn" onclick="resetPortal()">
+                            <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                            Restart Verification
+                        </button>
+                    </div>
+                `;
+                errorMsg.style.display = 'block';
+            }
+
+            // Update Biometric Monitor HUD
+            const hudStatus = document.querySelector('.hud-header span:last-child');
+            if (hudStatus) {
+                hudStatus.innerText = 'HUMAN DENIED';
+                hudStatus.style.color = 'var(--terminal-red)';
+            }
+        }
+
+        function grantAccess(reason) {
+            playBeep(880, 'sine', 0.2);
+
+            // Hide challenge popup modal
+            document.getElementById('challengeModal').style.display = 'none';
+
+            // Set authentic green checkmark on reCAPTCHA card
+            const checkbox = document.getElementById('captchaCheckbox');
+            if (checkbox) {
+                checkbox.className = 'checkbox checked';
+            }
+
+            // Display success banner below card with restart button
+            const errorMsg = document.getElementById('recaptchaErrorMsg');
+            if (errorMsg) {
+                errorMsg.className = 'recaptcha-success-msg';
+                errorMsg.innerHTML = `
+                    <div><strong>✅ Bot Verified Successfully</strong><br>${reason}</div>
+                    <div class="result-actions">
+                        <button class="restart-btn" onclick="resetPortal()">
+                            <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                            Restart Verification
+                        </button>
+                    </div>
+                `;
+                errorMsg.style.display = 'block';
+            }
+
+            // Update Biometric Monitor HUD
+            const hudStatus = document.querySelector('.hud-header span:last-child');
+            if (hudStatus) {
+                hudStatus.innerText = 'BOT VERIFIED';
+                hudStatus.style.color = 'var(--terminal-green)';
+            }
+        }
+
+        function resetPortal() {
+            location.reload();
+        }
+
+        function regenerateCanvases() {
+            playBeep(500, 'sine', 0.04);
+            globalStartTime = Date.now();
+            timeRemaining = TIMEOUT_LIMIT;
+            const timerBar = document.getElementById('timerBar');
+            if (timerBar) {
+                timerBar.style.width = '100%';
+                timerBar.style.backgroundColor = '#00ff66';
+            }
+            document.getElementById('timerDisplay').innerText = TIMEOUT_LIMIT.toFixed(1) + 's';
+            document.getElementById('hudTimer').innerText = TIMEOUT_LIMIT.toFixed(2) + 's';
+            generateNoiseCanvases();
+        }
+
+        function playBotAudio() {
+            for(let i=0; i<6; i++) {
+                setTimeout(() => playBeep(1000 + (i*150), 'square', 0.03), i * 40);
+            }
+        }
+    </script>
+</body>
+</html>
