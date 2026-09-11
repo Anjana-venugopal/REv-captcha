@@ -59,28 +59,37 @@ Detected HUMAN ( Without announcing AI Force)
 Detected HUMAN (Let's announce)
 
 # Diagrams
-![Workflow](Add your workflow/architecture diagram here)
-*Add caption explaining your workflow*
+```
+  +-------------------------------------------------------------+
+  |                     USER INTERACTION                        |
+  |             (Mouse Telemetry & Hover Jitter)                |
+  +------------------------------+------------------------------+
+                                 |
+                                 v
+  +-------------------------------------------------------------+
+  |                   CANVAS ENGINE (Client)                    |
+  |        - Renders Steganographic Matrix                      |
+  |        - Hidden target keys: RGB(0, 255, 102)             |
+  +------------------------------+------------------------------+
+                                 |
+                        [ Analyze Parity ]
+                                 |
+                +----------------+----------------+
+                |                                 |
+                v                                 v
+     [ BOT MATCH (Instant) ]            [ HUMAN DETECTED (Fail/Jitter) ]
+                |                                 |
+                v                                 v
+    +-----------------------+         +-----------------------+
+    | SUCCESS HUD           |         | ALERT RESPONSE HUD    |
+    | - Centered Green Tick |         | - Centered Red Cross  |
+    | - 0.0% Human Score    |         | - Blinking Red Banner |
+    +-----------------------+         | - Speech Synthesis:   |
+                                      |   "Meatbag detected"  |
+                                      |   (10x Rapid Loop)    |
+                                      +-----------------------+
 
-For Hardware:
-
-# Schematic & Circuit
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
-
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
-
-# Build Photos
-![Components](Add photo of your components here)
-*List out all components shown*
-
-![Build](Add photos of build process here)
-*Explain the build steps*
-
-![Final](Add photo of final product here)
-*Explain the final build*
-
+```
 ### Project Demo
 # Video
 [Add your demo video link here]
