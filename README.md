@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/b5bb80a2-ebbb-456d-ba5f-7c8d947eb360
+
 <img width="1280" height="640" alt="git (1)" src="https://github.com/user-attachments/assets/8920b256-2ba8-4988-b824-5351134eb4bd" />
 
 
@@ -92,6 +96,10 @@ Detected HUMAN (Let's announce)
 ```
 ### Project Demo
 # Video
+
+
+https://github.com/user-attachments/assets/6bdadd27-dc69-4b86-ad70-e58a97220220
+
 
 *Explain what the video demonstrates*
 
