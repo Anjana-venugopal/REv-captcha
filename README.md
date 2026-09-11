@@ -92,18 +92,15 @@ Detected HUMAN (Let's announce)
 ```
 ### Project Demo
 # Video
-<video src="demo.mp4" controls width="640">
-  Demo
-</video>
+
 *Explain what the video demonstrates*
 
-# Additional Demos
-[Add any extra demo materials/links]
+
 
 ## Team Contributions
-- [Name 1]: [Specific contributions]
-- [Name 2]: [Specific contributions]
-- [Name 3]: [Specific contributions]
+- ANUJ DAS : Frontend
+- ANJANA V NAIR : Debugging
+
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
