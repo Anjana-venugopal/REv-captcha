@@ -47,13 +47,16 @@ For Software:
 
 # Screenshots (Add at least 3)
 <img width="459" height="603" src="First-view of REv-capture.png" />
-*Add caption explaining what this shows*
+This is How REv-captcha appears to you...
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
+<img width="459" height="603" src="Working of REv-capture.png" />
+It works with special image recongisation ( It works only for AI).
 
-![Screenshot3](Add screenshot 3 here with proper name)
-*Add caption explaining what this shows*
+<img width="459" height="603" src="Detected Human (without alert).png" />
+Detected HUMAN ( Without announcing AI Force)
+
+<img width="459" height="603" src="Detected Human Alert.png" />
+Detected HUMAN (Let's announce)
 
 # Diagrams
 ![Workflow](Add your workflow/architecture diagram here)
