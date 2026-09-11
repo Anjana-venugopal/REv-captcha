@@ -1051,7 +1051,7 @@
                 ) || voices[0];
 
                 let count = 0;
-                const maxCount = 10;
+                const maxCount = 5;
 
                 function speakNext() {
                     if (count >= maxCount) {
@@ -1062,7 +1062,7 @@
                     count++;
                     const utterance = new SpeechSynthesisUtterance("Meatbag detected");
                     utterance.pitch = 0.2; // Extremely deep robotic bass tone
-                    utterance.rate = 1.1;   // Mechanical staccato cadence
+                    utterance.rate = 0.9;   // Mechanical staccato cadence
                     utterance.volume = 1.0;
 
                     if (roboticVoice) utterance.voice = roboticVoice;
