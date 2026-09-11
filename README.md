@@ -31,12 +31,8 @@ For Software:
 - HTML
 - CSS
 - JAVASCRIPT
-- [Tools used]
-
-For Hardware:
-- [List main components]
-- [List specifications]
-- [List tools required]
+- VS Code
+- Gemini
 
 ### Implementation
 For Software:
