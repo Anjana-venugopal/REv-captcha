@@ -27,7 +27,7 @@ Robots are going to struggle due to human interventions in their websites in fut
 Therefore, "the good samaritan" like us have came up with a solution ,  REv-captcha  : The one and only bot verification system where humans are strictly 'prohibitted'
 
 ## Technical Details
-### Technologies/Components Used
+### Technologies Used
 For Software:
 - HTML
 - CSS
