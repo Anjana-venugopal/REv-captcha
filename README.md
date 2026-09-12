@@ -19,10 +19,10 @@
 A security gatekeeping system designed for a high-security server that explicitly blocks human users and allows entry only to legitimate AI agents and scripts.
 basically it's a "Reverse Captcha" where instead of bots, humans are detected.
 
-### The Problem (that doesn't exist)
+### The Problem 
 We are doing a useless project (which might get used in future).It's just a random thought- why don't we created something really opposite.
 
-### The Solution (that nobody asked for)
+### The Solution 
 Robots are going to struggle due to human interventions in their websites in future.
 Therefore, "the good samaritan" like us have came up with a solution ,  REv-captcha  : The one and only bot verification system where humans are strictly 'prohibitted'
 
@@ -50,7 +50,7 @@ npx serve .
 ### Project Documentation
 For Software:
 
-# Screenshots (Add at least 3)
+# Screenshots 
 <img width="459" height="603" src="First-view of REv-capture.png" />
 This is How REv-captcha appears to you...
 
