@@ -63,6 +63,10 @@ Detected HUMAN ( Without announcing AI Force)
 <img width="459" height="603" src="Detected Human Alert.png" />
 Detected HUMAN (Let's announce)
 
+<img width="459" height="603" src="if bot.png" />
+If it's Bot or Ai...
+
+
 # Diagrams
 ```
   +-------------------------------------------------------------+
